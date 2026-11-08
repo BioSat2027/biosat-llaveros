@@ -13,22 +13,26 @@
   metida en esta pagina no sale. La tienda sigue viviendo en Apps Script
   (doGet la permite en iframe con XFrameOptionsMode.ALLOWALL).
   Si cambia la implementacion, solo hay que cambiar el src del iframe.
+
+  La tienda esta SIEMPRE visible y el aviso de carga va encima, sin
+  bloquear el dedo. Antes la tienda se ocultaba hasta su evento "load" y
+  en algunos moviles ese evento no llegaba hasta tocar la pantalla: se
+  quedaba "pensando". Ahora el aviso se quita al cargar, al tocar o, como
+  mucho, a los 6 segundos.
 -->
 <style>
   html,body{margin:0;height:100%;background:#0c1220;color:#f0ece1}
-  iframe{display:block;border:0;width:100%;height:100vh;height:100dvh;
-    position:relative;z-index:1;opacity:0;pointer-events:none;transition:opacity .3s}
-  iframe.lista{opacity:1;pointer-events:auto}
-  .carga{position:fixed;inset:0;display:flex;flex-direction:column;gap:14px;
+  iframe{display:block;border:0;width:100%;height:100vh;height:100dvh;background:#0c1220}
+  .carga{position:fixed;inset:0;z-index:2;pointer-events:none;
+    display:flex;flex-direction:column;gap:14px;
     align-items:center;justify-content:center;text-align:center;padding:0 24px;
+    background:#0c1220;transition:opacity .35s;
     font:16px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#8f9bb1}
+  .carga.fuera{opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s .35s}
   .carga strong{color:#f0ece1;font-size:19px}
   .rueda{width:34px;height:34px;border:3px solid #26314a;border-top-color:#7dd35b;
     border-radius:50%;animation:gira .9s linear infinite}
   @keyframes gira{to{transform:rotate(360deg)}}
-  .carga.lenta a{color:#7dd35b}
-  .carga a{display:none}
-  .carga.lenta a{display:inline}
 </style>
 </head>
 <body>
@@ -36,19 +40,17 @@
   <div class="rueda" aria-hidden="true"></div>
   <strong>Tienda BioSat</strong>
   <span>Abriendo la tienda&hellip;</span>
-  <a id="directo" href="https://script.google.com/macros/s/AKfycbys719HxBb96siSxQhXSo_q3oQ2XWbq5ZpfTMdtaMDmdempxYQUtbcrvl3OamG20Y__/exec">&iquest;Tarda mucho? Abrirla directamente</a>
 </div>
 <iframe id="tienda" title="Tienda de llaveros BioSat"
         src="https://script.google.com/macros/s/AKfycbys719HxBb96siSxQhXSo_q3oQ2XWbq5ZpfTMdtaMDmdempxYQUtbcrvl3OamG20Y__/exec"
         allow="clipboard-write"></iframe>
 <script>
-  // El marco se muestra cuando la tienda ha cargado; mientras tanto se ve
-  // el aviso de carga con el mismo fondo que la tienda.
-  var f = document.getElementById('tienda');
-  f.addEventListener('load', function(){
-    setTimeout(function(){ f.className = 'lista'; }, 300);
-  });
-  setTimeout(function(){ document.getElementById('carga').className = 'carga lenta'; }, 15000);
+  var carga = document.getElementById('carga');
+  function quitar(){ carga.className = 'carga fuera'; }
+  document.getElementById('tienda').addEventListener('load', function(){ setTimeout(quitar, 300); });
+  window.addEventListener('blur', quitar);          // el dedo ya esta dentro de la tienda
+  document.addEventListener('pointerdown', quitar);
+  setTimeout(quitar, 6000);
 </script>
 </body>
 </html>
