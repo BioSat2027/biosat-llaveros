@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Llaveros BioSat</title>
 <meta name="description" content="Pide tu llavero impreso en 3D y ayuda a financiar el CanSat BioSat 2027.">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#0c1220">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='36' r='22' fill='%23FFD21F'/%3E%3Ccircle cx='32' cy='12' r='8' fill='none' stroke='%23161616' stroke-width='5'/%3E%3C/svg%3E">
 <!--
   Pagina que envuelve la tienda de Apps Script. Abierta directamente,
@@ -15,16 +15,40 @@
   Si cambia la implementacion, solo hay que cambiar el src del iframe.
 -->
 <style>
-  html,body{margin:0;height:100%;background:#fff}
-  iframe{display:block;border:0;width:100%;height:100vh;height:100dvh}
-  .carga{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    font:16px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#555;z-index:-1}
+  html,body{margin:0;height:100%;background:#0c1220;color:#f0ece1}
+  iframe{display:block;border:0;width:100%;height:100vh;height:100dvh;
+    position:relative;z-index:1;opacity:0;pointer-events:none;transition:opacity .3s}
+  iframe.lista{opacity:1;pointer-events:auto}
+  .carga{position:fixed;inset:0;display:flex;flex-direction:column;gap:14px;
+    align-items:center;justify-content:center;text-align:center;padding:0 24px;
+    font:16px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#8f9bb1}
+  .carga strong{color:#f0ece1;font-size:19px}
+  .rueda{width:34px;height:34px;border:3px solid #26314a;border-top-color:#7dd35b;
+    border-radius:50%;animation:gira .9s linear infinite}
+  @keyframes gira{to{transform:rotate(360deg)}}
+  .carga.lenta a{color:#7dd35b}
+  .carga a{display:none}
+  .carga.lenta a{display:inline}
 </style>
 </head>
 <body>
-<div class="carga">Abriendo la tienda&hellip;</div>
+<div class="carga" id="carga">
+  <div class="rueda" aria-hidden="true"></div>
+  <strong>Tienda BioSat</strong>
+  <span>Abriendo la tienda&hellip;</span>
+  <a id="directo" href="https://script.google.com/macros/s/AKfycbys719HxBb96siSxQhXSo_q3oQ2XWbq5ZpfTMdtaMDmdempxYQUtbcrvl3OamG20Y__/exec">&iquest;Tarda mucho? Abrirla directamente</a>
+</div>
 <iframe id="tienda" title="Tienda de llaveros BioSat"
         src="https://script.google.com/macros/s/AKfycbys719HxBb96siSxQhXSo_q3oQ2XWbq5ZpfTMdtaMDmdempxYQUtbcrvl3OamG20Y__/exec"
         allow="clipboard-write"></iframe>
+<script>
+  // El marco se muestra cuando la tienda ha cargado; mientras tanto se ve
+  // el aviso de carga con el mismo fondo que la tienda.
+  var f = document.getElementById('tienda');
+  f.addEventListener('load', function(){
+    setTimeout(function(){ f.className = 'lista'; }, 300);
+  });
+  setTimeout(function(){ document.getElementById('carga').className = 'carga lenta'; }, 15000);
+</script>
 </body>
 </html>
